@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NEON CALC</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#05060a; --panel:rgba(12,16,28,.72); --cyan:#00f0ff; --magenta:#ff2bd6; --amber:#ffb020; --text:#e8f6ff; --muted:#7a8aa3; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html, body { min-height:100%; background:radial-gradient(800px 420px at 10% -10%,rgba(0,240,255,.12),transparent 55%),radial-gradient(640px 380px at 110% 110%,rgba(255,43,214,.14),transparent 50%),var(--bg); color:var(--text); font-family:"Share Tech Mono",ui-monospace,monospace; }
+    body { display:grid; place-items:start center; padding:16px 12px 28px; }
+    .wrap { width:min(420px,100%); }
+    .brand { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; padding:0 4px; }
+    .brand h1 { font-family:Orbitron,sans-serif; font-size:12px; letter-spacing:.28em; color:var(--cyan); }
+    .brand span { font-size:11px; color:var(--muted); }
+    .calc { background:var(--panel); border:1px solid rgba(0,240,255,.28); border-radius:24px; padding:16px; }
+    .screen { background:linear-gradient(180deg,rgba(4,8,16,.95),rgba(8,12,22,.8)); border:1px solid rgba(0,240,255,.18); border-radius:14px; padding:14px; margin-bottom:14px; min-height:96px; }
+    .screen-top { display:flex; justify-content:space-between; gap:10px; }
+    .mem-flag { font-family:Orbitron,sans-serif; font-size:11px; color:transparent; }
+    .mem-flag.on { color:var(--magenta); }
+    .expr { min-height:20px; color:var(--muted); font-size:13px; text-align:right; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .value { font-family:Orbitron,sans-serif; font-weight:700; font-size:clamp(26px,8vw,38px); text-align:right; margin-top:8px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    button.key { appearance:none; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); color:var(--text); font-family:Orbitron,sans-serif; font-size:16px; font-weight:700; height:54px; border-radius:14px; cursor:pointer; }
+    .op { color:var(--cyan); }
+    .eq { color:#140016; background:linear-gradient(180deg,#ff4de4,#c4009a); border:none; }
+    .fn { color:var(--amber); }
+    .mem { color:var(--magenta); font-size:12px; }
+    .zero { grid-column:span 2; }
+    .hint { margin-top:12px; text-align:center; font-size:11px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><h1>NEON CALC</h1><span id="who">MINI APP</span></div>
+    <div class="calc">
+      <div class="screen"><div class="screen-top"><div class="mem-flag" id="memFlag">M</div><div class="expr" id="expr"></div></div><div class="value" id="display">0</div></div>
+      <div class="grid" id="grid">
+        <button class="key mem" type="button" data-act="mc">MC</button>
+        <button class="key mem" type="button" data-act="mr">MR</button>
+        <button class="key mem" type="button" data-act="mplus">M+</button>
+        <button class="key mem" type="button" data-act="mminus">M-</button>
+        <button class="key fn" type="button" data-act="clear">AC</button>
+        <button class="key fn" type="button" data-act="sign">±</button>
+        <button class="key fn" type="button" data-act="percent">%</button>
+        <button class="key op" type="button" data-op="/">÷</button>
+        <button class="key" type="button" data-num="7">7</button>
+        <button class="key" type="button" data-num="8">8</button>
+        <button class="key" type="button" data-num="9">9</button>
+        <button class="key op" type="button" data-op="*">×</button>
+        <button class="key" type="button" data-num="4">4</button>
+        <button class="key" type="button" data-num="5">5</button>
+        <button class="key" type="button" data-num="6">6</button>
+        <button class="key op" type="button" data-op="-">−</button>
+        <button class="key" type="button" data-num="1">1</button>
+        <button class="key" type="button" data-num="2">2</button>
+        <button class="key" type="button" data-num="3">3</button>
+        <button class="key op" type="button" data-op="+">+</button>
+        <button class="key zero" type="button" data-num="0">0</button>
+        <button class="key" type="button" data-num=".">.</button>
+        <button class="key eq" type="button" data-act="eq">=</button>
+      </div>
+    </div>
+    <p class="hint">Только калькулятор. История и кубик — в боте.</p>
+  </div>
+  <script>
+    (function () {
+      const tg = window.Telegram && window.Telegram.WebApp;
+      if (tg) {
+        tg.ready(); tg.expand();
+        try { tg.setHeaderColor("#05060a"); tg.setBackgroundColor("#05060a"); } catch (e) {}
+        const name = (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name) || "MINI APP";
+        document.getElementById("who").textContent = name;
+      }
+      const display = document.getElementById("display");
+      const exprEl = document.getElementById("expr");
+      const memFlag = document.getElementById("memFlag");
+      let current = "0", stored = null, op = null, fresh = false, memory = 0;
+      try { memory = Number(localStorage.getItem("neon-mem") || 0) || 0; } catch (e) {}
+      function fmt(n) { const num = Number(n); if (!Number.isFinite(num)) return "ERR"; const s = String(num); return s.length > 14 ? num.toExponential(6) : s; }
+      function save() { try { localStorage.setItem("neon-mem", String(memory)); } catch (e) {} }
+      function render() { display.textContent = current; exprEl.textContent = stored !== null && op ? fmt(stored) + " " + op : ""; memFlag.classList.toggle("on", memory !== 0); }
+      function inputNum(d) { if (fresh) { current = d === "." ? "0." : d; fresh = false; } else if (d === ".") { if (current.indexOf(".") === -1) current += "."; } else current = current === "0" ? d : current + d; render(); }
+      function apply() { if (stored === null || !op) return Number(current); const a = Number(stored), b = Number(current); if (op === "+") return a + b; if (op === "-") return a - b; if (op === "*") return a * b; if (op === "/") return b === 0 ? NaN : a / b; return b; }
+      function setOp(next) { if (stored !== null && !fresh) stored = apply(); else stored = Number(current); op = next; current = fmt(stored); fresh = true; render(); }
+      function equals() {
+        if (op === null) return;
+        const left = fmt(stored), right = current, sign = op;
+        const result = fmt(apply());
+        current = result; stored = null; op = null; fresh = true; render();
+        try {
+          fetch("/api/hist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ expr: left + " " + sign + " " + right, result: result, ts: Date.now(), userId: tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id }) }).catch(function () {});
+        } catch (e) {}
+      }
+      function handle(btn) {
+        if (!btn) return;
+        const num = btn.getAttribute("data-num"); const nextOp = btn.getAttribute("data-op"); const act = btn.getAttribute("data-act");
+        if (num !== null) inputNum(num);
+        else if (nextOp) setOp(nextOp);
+        else if (act === "clear") { current = "0"; stored = null; op = null; fresh = false; render(); }
+        else if (act === "sign") { if (current !== "0") current = current.charAt(0) === "-" ? current.slice(1) : "-" + current; render(); }
+        else if (act === "percent") { current = fmt(Number(current) / 100); render(); }
+        else if (act === "eq") equals();
+        else if (act === "mc") { memory = 0; save(); render(); }
+        else if (act === "mr") { current = fmt(memory); fresh = true; render(); }
+        else if (act === "mplus") { memory += Number(current) || 0; save(); fresh = true; render(); }
+        else if (act === "mminus") { memory -= Number(current) || 0; save(); fresh = true; render(); }
+      }
+      document.getElementById("grid").addEventListener("click", function (e) { handle(e.target.closest("button")); });
+      render();
+    })();
+  </script>
+</body>
+</html>
