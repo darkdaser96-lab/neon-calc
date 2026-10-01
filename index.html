@@ -29,8 +29,9 @@
     .screen-top{display:flex;justify-content:space-between;align-items:center;height:calc(14 * var(--u))}
     .mem-flag{font-family:Orbitron,sans-serif;font-size:calc(11 * var(--u));color:transparent}
     .mem-flag.on{color:var(--magenta)}
+    .disp-row{display:flex;align-items:center;margin-top:calc(4 * var(--u));min-width:0}
     .display{--fs:clamp(calc(24 * var(--u)),calc(8vw * var(--k)),calc(36 * var(--u)));font-family:Orbitron,sans-serif;font-weight:700;font-size:var(--fs);line-height:calc(var(--fs) * 1.4);height:calc(var(--fs) * 1.4);text-align:right;white-space:nowrap;
-      overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin-top:calc(4 * var(--u));min-width:0;cursor:text;touch-action:pan-y pinch-zoom;
+      overflow-x:auto;overflow-y:hidden;scrollbar-width:none;flex:1 1 auto;min-width:0;cursor:text;touch-action:pan-y pinch-zoom;
       -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}
     .display::-webkit-scrollbar{display:none}
     .line,.line *{pointer-events:none}
@@ -40,6 +41,12 @@
     .caret{display:inline-block;position:relative;width:0;height:1.05em;vertical-align:-.12em}
     .caret::after{content:"";position:absolute;left:-1px;top:0;bottom:0;width:2px;border-radius:1px;background:var(--magenta);box-shadow:0 0 6px var(--magenta);animation:blink 1.06s steps(1) infinite}
     @keyframes blink{50%{opacity:0}}
+    /* ⌫ : only on narrow screens; sits at the right edge of the expression row, the expression area shrinks so text never runs under it */
+    .bs{display:none;flex:none;align-items:center;justify-content:center;appearance:none;border:1px solid rgba(0,240,255,.22);background:rgba(255,255,255,.04);color:var(--cyan);
+      width:44px;height:44px;min-height:40px;margin:-2px -4px -2px 6px;border-radius:12px;padding:0 2px 0 0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Symbols","DejaVu Sans",sans-serif;font-size:22px;line-height:1;cursor:pointer;
+      touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none;overflow:hidden}
+    .bs:active,.bs.down{transform:scale(.94);filter:brightness(1.35)}
+    @media (max-width:700px){.bs{display:flex}}
     .draft{font-size:calc(15 * var(--u));text-align:right;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.4em;line-height:1.4em;margin-top:calc(2 * var(--u))}
     .draft.ok{color:rgba(0,240,255,.62)}
     .draft.wait{color:#6b7385;letter-spacing:.06em}
@@ -79,7 +86,10 @@
     <div class="calc" id="viewCalc">
       <div class="screen">
         <div class="screen-top"><div class="mem-flag" id="memFlag">M</div></div>
-        <div class="display" id="display" role="textbox" aria-readonly="true" aria-label="Выражение"><span class="line" id="line"></span></div>
+        <div class="disp-row">
+          <div class="display" id="display" role="textbox" aria-readonly="true" aria-label="Выражение"><span class="line" id="line"></span></div>
+          <button class="bs" id="bs" type="button" aria-label="Стереть" title="Стереть">⌫</button>
+        </div>
         <div class="draft" id="draft" aria-live="polite">&nbsp;</div>
       </div>
       <div class="pad" id="grid">
@@ -305,6 +315,20 @@
     // horizontal drag moves the caret instead of panning (touch-action stays permissive so taps elsewhere stay snappy)
     displayEl.addEventListener("touchmove",function(e){if(dragging!==null&&e.cancelable)e.preventDefault()},{passive:false});
     displayEl.addEventListener("contextmenu",function(e){e.preventDefault()});
+    // ---------- ⌫ (narrow screens): same backspace() as the physical key; acts on pointerdown, never takes focus ----------
+    var bsEl=document.getElementById("bs"),bsHold=null,bsRep=null;
+    function bsStop(){clearTimeout(bsHold);clearInterval(bsRep);bsHold=bsRep=null;bsEl.classList.remove("down")}
+    bsEl.addEventListener("pointerdown",function(e){
+      e.preventDefault();e.stopPropagation();if(e.button>0)return;
+      bsStop();bsEl.classList.add("down");backspace();
+      try{bsEl.setPointerCapture(e.pointerId)}catch(_){}
+      // long press: repeat after 450 ms, every 80 ms, until released or caret reaches 0
+      bsHold=setTimeout(function(){bsRep=setInterval(function(){if(caret===0){bsStop();return}backspace()},80)},450)});
+    ["pointerup","pointercancel","lostpointercapture"].forEach(function(t){bsEl.addEventListener(t,function(e){e.stopPropagation();bsStop()})});
+    // pointer taps were already handled on pointerdown -> swallow their click; keyboard / assistive activation (detail 0) still works
+    bsEl.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();if(e.detail===0){backspace();bsEl.blur()}});
+    bsEl.addEventListener("contextmenu",function(e){e.preventDefault()});
+    window.addEventListener("blur",bsStop);
     // ---------- keyboard ----------
     var keyBtn=function(sel){return grid.querySelector(sel)};
     function flash(btn){if(!btn)return;btn.classList.add("kbd");setTimeout(function(){btn.classList.remove("kbd")},120)}

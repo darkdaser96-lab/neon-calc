@@ -27,5 +27,10 @@ Neon web calculator with memory buttons, parentheses and on-device history.
   nothing. **MR** inserts the memory at the caret (negative as `(−n)`, adds `×` if it would touch a number). **MC** clears.
   Memory and the M flag persist in localStorage.
 - **History** is stored only on this device (localStorage, last 20). Tapping an entry loads its result into the editor and closes history.
+- **⌫** (screens ≤ 700px wide only, `@media (max-width:700px)`): a 44px button at the right edge of the expression row,
+  aria-label «Стереть». It calls the same `backspace()` as the physical Backspace key (deletes the character left of the caret,
+  nothing at the start; after `=` it edits the result just like Backspace). It acts on `pointerdown` (preventDefault + stopPropagation),
+  so it never takes focus, never moves the caret and never fires twice (the follow-up click is swallowed; keyboard/AT activation still works).
+  Holding it repeats the delete (after 450 ms, every 80 ms). The expression area shrinks to leave room, so text never runs under it.
 - Keyboard: digits / Numpad, `.` `,`, `+ - * /`, `( )`, `%`, Backspace (before caret), Delete (after caret),
   arrows, Home/End, Enter / NumpadEnter / `=`; Escape closes history, otherwise clears (AC).
