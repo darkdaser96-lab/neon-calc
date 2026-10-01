@@ -8,157 +8,339 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <style>
     :root { --bg:#05060a; --panel:rgba(12,16,28,.72); --cyan:#00f0ff; --magenta:#ff2bd6; --amber:#ffb020; --text:#e8f6ff; --muted:#7a8aa3;
-      --k:1.1; --u:calc(1px * var(--k)); --side:clamp(10px,3.4vw,calc(12 * var(--u))); }
+      --k:1.1; --u:calc(1px * var(--k)); --side:clamp(8px,3vw,calc(12 * var(--u)));
+      --pad:clamp(10px,3.2vw,calc(16 * var(--u))); --gap:clamp(6px,1.9vw,calc(8 * var(--u))); --keyh:calc(54 * var(--u)); }
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{min-height:100%;background:radial-gradient(800px 420px at 10% -10%,rgba(0,240,255,.12),transparent 55%),radial-gradient(640px 380px at 110% 110%,rgba(255,43,214,.14),transparent 50%),var(--bg);color:var(--text);font-family:"Share Tech Mono",ui-monospace,monospace}
     html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-    body{display:grid;place-items:start center;min-height:100vh;min-height:100dvh;overflow-x:hidden;
-      padding:calc(16 * var(--u) + env(safe-area-inset-top,0px)) calc(var(--side) + env(safe-area-inset-right,0px)) calc(28 * var(--u) + env(safe-area-inset-bottom,0px)) calc(var(--side) + env(safe-area-inset-left,0px))}
+    body{display:grid;place-items:start center;min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;
+      padding:calc(14 * var(--u) + env(safe-area-inset-top,0px)) calc(var(--side) + env(safe-area-inset-right,0px)) calc(20 * var(--u) + env(safe-area-inset-bottom,0px)) calc(var(--side) + env(safe-area-inset-left,0px))}
     .wrap{width:min(calc(420 * var(--u)),100%);min-width:0}
-    .brand{display:flex;justify-content:space-between;align-items:baseline;gap:calc(8 * var(--u));margin-bottom:calc(12 * var(--u));padding:0 calc(4 * var(--u))}
+    .brand{display:flex;justify-content:space-between;align-items:center;gap:calc(10 * var(--u));margin-bottom:calc(12 * var(--u));padding:0 calc(2 * var(--u));min-width:0}
+    .brand-id{display:flex;flex-direction:column;gap:calc(3 * var(--u));min-width:0}
     .brand h1{font-family:Orbitron,sans-serif;font-size:calc(12 * var(--u));letter-spacing:.28em;color:var(--cyan);white-space:nowrap}
     .brand span{font-size:calc(11 * var(--u));color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:calc(8 * var(--u));margin-bottom:calc(12 * var(--u))}
-    .tab{appearance:none;border:1px solid rgba(0,240,255,.25);background:rgba(255,255,255,.04);color:var(--text);font-family:Orbitron,sans-serif;font-size:calc(12 * var(--u));letter-spacing:.08em;height:calc(42 * var(--u));border-radius:calc(12 * var(--u));cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 calc(6 * var(--u))}
-    .tab.on{color:#140016;background:linear-gradient(180deg,#ff4de4,#c4009a);border:none}
+    .tab{appearance:none;flex:none;border:1px solid rgba(0,240,255,.3);background:rgba(255,255,255,.04);color:var(--text);font-family:Orbitron,sans-serif;font-size:calc(11.5 * var(--u));letter-spacing:.08em;height:calc(38 * var(--u));border-radius:calc(12 * var(--u));cursor:pointer;white-space:nowrap;padding:0 calc(14 * var(--u))}
+    .tab.on{color:#140016;background:linear-gradient(180deg,#ff4de4,#c4009a);border-color:transparent}
     .tab .x{display:inline-block;margin-left:.1em;font-size:1.35em;line-height:1;vertical-align:-.12em;font-weight:800}
-    #tabDice{border-color:rgba(255,176,32,.35)}
-    #tabDice.rolled{color:var(--amber);border-color:var(--amber)}
-    .calc,.hist{background:var(--panel);border:1px solid rgba(0,240,255,.28);border-radius:calc(24 * var(--u));padding:calc(16 * var(--u));backdrop-filter:blur(16px)}
+    .calc,.hist{background:var(--panel);border:1px solid rgba(0,240,255,.28);border-radius:calc(24 * var(--u));padding:var(--pad);backdrop-filter:blur(16px);min-width:0}
     .hidden{display:none}
-    .screen{background:linear-gradient(180deg,rgba(4,8,16,.95),rgba(8,12,22,.8));border:1px solid rgba(0,240,255,.18);border-radius:calc(14 * var(--u));padding:calc(14 * var(--u));margin-bottom:calc(14 * var(--u));min-height:calc(96 * var(--u));min-width:0}
-    .screen-top{display:flex;justify-content:space-between;gap:calc(10 * var(--u))}
+    .screen{background:linear-gradient(180deg,rgba(4,8,16,.95),rgba(8,12,22,.8));border:1px solid rgba(0,240,255,.18);border-radius:calc(14 * var(--u));padding:calc(10 * var(--u)) calc(12 * var(--u));margin-bottom:calc(12 * var(--u));min-width:0}
+    .screen-top{display:flex;justify-content:space-between;align-items:center;height:calc(14 * var(--u))}
     .mem-flag{font-family:Orbitron,sans-serif;font-size:calc(11 * var(--u));color:transparent}
     .mem-flag.on{color:var(--magenta)}
-    .expr{min-height:calc(20 * var(--u));color:var(--muted);font-size:calc(13 * var(--u));text-align:right;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .value{font-family:Orbitron,sans-serif;font-weight:700;font-size:clamp(calc(26 * var(--u)),calc(8vw * var(--k)),calc(38 * var(--u)));text-align:right;margin-top:calc(8 * var(--u));white-space:nowrap;overflow:hidden}
-    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(8 * var(--u))}
-    button.key{appearance:none;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-family:Orbitron,sans-serif;font-size:calc(16 * var(--u));font-weight:700;height:calc(54 * var(--u));border-radius:calc(14 * var(--u));cursor:pointer;min-width:0}
+    .display{--fs:clamp(calc(24 * var(--u)),calc(8vw * var(--k)),calc(36 * var(--u)));font-family:Orbitron,sans-serif;font-weight:700;font-size:var(--fs);line-height:calc(var(--fs) * 1.4);height:calc(var(--fs) * 1.4);text-align:right;white-space:nowrap;
+      overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin-top:calc(4 * var(--u));min-width:0;cursor:text;touch-action:pan-y pinch-zoom;
+      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}
+    .display::-webkit-scrollbar{display:none}
+    .line,.line *{pointer-events:none}
+    .line{display:inline-block;white-space:pre;padding:0 2px;vertical-align:top}
+    .line .ph{color:rgba(232,246,255,.35)}
+    .line .o{color:var(--cyan)}
+    .caret{display:inline-block;position:relative;width:0;height:1.05em;vertical-align:-.12em}
+    .caret::after{content:"";position:absolute;left:-1px;top:0;bottom:0;width:2px;border-radius:1px;background:var(--magenta);box-shadow:0 0 6px var(--magenta);animation:blink 1.06s steps(1) infinite}
+    @keyframes blink{50%{opacity:0}}
+    .draft{font-size:calc(15 * var(--u));text-align:right;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.4em;line-height:1.4em;margin-top:calc(2 * var(--u))}
+    .draft.ok{color:rgba(0,240,255,.62)}
+    .draft.wait{color:#6b7385;letter-spacing:.06em}
+    .draft.shake{animation:shake .32s ease}
+    @keyframes shake{20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+    .pad{display:flex;flex-direction:column;gap:var(--gap)}
+    .row5,.row4{display:grid;gap:var(--gap)}
+    .row5{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .row4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    button.key{appearance:none;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text);font-family:Orbitron,sans-serif;font-size:calc(16 * var(--u));font-weight:700;height:var(--keyh);border-radius:calc(14 * var(--u));cursor:pointer;min-width:0;padding:0;overflow:hidden;white-space:nowrap;touch-action:manipulation}
+    .row5 button.key{font-size:clamp(12px,3.9vw,calc(15 * var(--u)));border-radius:calc(12 * var(--u))}
+    .row5 button.mem{font-size:clamp(10.5px,3.3vw,calc(12 * var(--u)))}
     button.key:active{transform:scale(.96)}
     button.key.kbd{transform:scale(.96);filter:brightness(1.35)}
     .op{color:var(--cyan);border-color:rgba(0,240,255,.28)}
     .eq{color:#140016;background:linear-gradient(180deg,#ff4de4,#c4009a);border:none}
     .fn{color:var(--amber)}
-    .mem{color:var(--magenta);font-size:calc(12 * var(--u))}
+    .row5 button.par{color:var(--cyan);font-family:"Share Tech Mono",ui-monospace,monospace;font-size:clamp(17px,5.4vw,calc(21 * var(--u)));font-weight:400}
+    .mem{color:var(--magenta)}
     .zero{grid-column:span 2}
     .hist h2{font-family:Orbitron,sans-serif;font-size:calc(12 * var(--u));letter-spacing:.16em;color:var(--cyan);margin-bottom:calc(10 * var(--u))}
-    .hist-list{display:flex;flex-direction:column;gap:calc(8 * var(--u));max-height:52vh;max-height:52dvh;overflow:auto}
+    .hist-list{display:flex;flex-direction:column;gap:calc(8 * var(--u));max-height:60vh;max-height:60dvh;overflow:auto}
     .hist-item{border:1px solid rgba(255,255,255,.08);border-radius:calc(12 * var(--u));padding:calc(10 * var(--u)) calc(12 * var(--u));cursor:pointer;font-size:calc(16 * var(--u));overflow-wrap:anywhere}
     .hist-item small{display:block;color:var(--muted);font-size:calc(11 * var(--u));margin-bottom:calc(4 * var(--u))}
     .empty{color:var(--muted);text-align:center;padding:calc(28 * var(--u)) calc(8 * var(--u));font-size:calc(16 * var(--u))}
     .hint{margin-top:calc(12 * var(--u));text-align:center;font-size:calc(11 * var(--u));color:var(--muted)}
+    @media (max-height:740px){:root{--keyh:calc(48 * var(--u))}}
+    @media (max-height:600px){:root{--keyh:calc(42 * var(--u))} .brand{margin-bottom:calc(8 * var(--u))} .screen{margin-bottom:calc(10 * var(--u))}}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="brand"><h1>NEON CALC</h1><span id="who">MINI APP</span></div>
-    <div class="tabs">
+    <div class="brand">
+      <div class="brand-id"><h1>NEON CALC</h1><span id="who">MINI APP</span></div>
       <button class="tab" id="tabCalc" type="button" aria-controls="viewHist" aria-pressed="false" aria-expanded="false">ИСТОРИЯ</button>
-      <button class="tab" id="tabDice" type="button">КУБИК</button>
     </div>
     <div class="calc" id="viewCalc">
-      <div class="screen"><div class="screen-top"><div class="mem-flag" id="memFlag">M</div><div class="expr" id="expr"></div></div><div class="value" id="display">0</div></div>
-      <div class="grid" id="grid">
-        <button class="key mem" type="button" data-act="mc">MC</button>
-        <button class="key mem" type="button" data-act="mr">MR</button>
-        <button class="key mem" type="button" data-act="mplus">M+</button>
-        <button class="key mem" type="button" data-act="mminus">M-</button>
-        <button class="key fn" type="button" data-act="clear">AC</button>
-        <button class="key fn" type="button" data-act="sign">±</button>
-        <button class="key fn" type="button" data-act="percent">%</button>
-        <button class="key op" type="button" data-op="/">÷</button>
-        <button class="key" type="button" data-num="7">7</button>
-        <button class="key" type="button" data-num="8">8</button>
-        <button class="key" type="button" data-num="9">9</button>
-        <button class="key op" type="button" data-op="*">×</button>
-        <button class="key" type="button" data-num="4">4</button>
-        <button class="key" type="button" data-num="5">5</button>
-        <button class="key" type="button" data-num="6">6</button>
-        <button class="key op" type="button" data-op="-">−</button>
-        <button class="key" type="button" data-num="1">1</button>
-        <button class="key" type="button" data-num="2">2</button>
-        <button class="key" type="button" data-num="3">3</button>
-        <button class="key op" type="button" data-op="+">+</button>
-        <button class="key zero" type="button" data-num="0">0</button>
-        <button class="key" type="button" data-num=".">.</button>
-        <button class="key eq" type="button" data-act="eq">=</button>
+      <div class="screen">
+        <div class="screen-top"><div class="mem-flag" id="memFlag">M</div></div>
+        <div class="display" id="display" role="textbox" aria-readonly="true" aria-label="Выражение"><span class="line" id="line"></span></div>
+        <div class="draft" id="draft" aria-live="polite">&nbsp;</div>
+      </div>
+      <div class="pad" id="grid">
+        <div class="row5">
+          <button class="key fn" type="button" data-act="clear">AC</button>
+          <button class="key mem" type="button" data-act="mc">MC</button>
+          <button class="key mem" type="button" data-act="mr">MR</button>
+          <button class="key mem" type="button" data-act="mplus">M+</button>
+          <button class="key mem" type="button" data-act="mminus">M−</button>
+        </div>
+        <div class="row5">
+          <button class="key par" type="button" data-paren="(">(</button>
+          <button class="key par" type="button" data-paren=")">)</button>
+          <button class="key fn" type="button" data-act="sign">±</button>
+          <button class="key fn" type="button" data-act="percent">%</button>
+          <button class="key op" type="button" data-op="/">÷</button>
+        </div>
+        <div class="row4">
+          <button class="key" type="button" data-num="7">7</button>
+          <button class="key" type="button" data-num="8">8</button>
+          <button class="key" type="button" data-num="9">9</button>
+          <button class="key op" type="button" data-op="*">×</button>
+          <button class="key" type="button" data-num="4">4</button>
+          <button class="key" type="button" data-num="5">5</button>
+          <button class="key" type="button" data-num="6">6</button>
+          <button class="key op" type="button" data-op="-">−</button>
+          <button class="key" type="button" data-num="1">1</button>
+          <button class="key" type="button" data-num="2">2</button>
+          <button class="key" type="button" data-num="3">3</button>
+          <button class="key op" type="button" data-op="+">+</button>
+          <button class="key zero" type="button" data-num="0">0</button>
+          <button class="key" type="button" data-num=".">.</button>
+          <button class="key eq" type="button" data-act="eq">=</button>
+        </div>
       </div>
     </div>
     <div class="hist hidden" id="viewHist"><h2>ПОСЛЕДНИЕ СЧЁТЫ</h2><div class="hist-list" id="histList"></div></div>
-    <p class="hint">История только на этом устройстве · Кубик кидает 1–100</p>
+    <p class="hint">История только на этом устройстве</p>
   </div>
   <script>
+  // parser:begin
+  // Tokenizer + recursive-descent parser. No eval/Function.
+  //   expr    := term (('+'|'-') term)*
+  //   term    := unary (('*'|'/') unary)*
+  //   unary   := '-' unary | postfix
+  //   postfix := primary '%'*            (n% = n/100)
+  //   primary := number | '(' expr ')'
+  // Implicit multiplication (2(3), (2)(3)) is NOT supported -> not computable.
+  var NeonParser=(function(){
+    var NUM=/^(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/;
+    function normalize(s){return String(s).replace(/[−–]/g,"-").replace(/[×x·]/g,"*").replace(/[÷:]/g,"/").replace(/,/g,".").replace(/\s+/g,"")}
+    function tokenize(s){var out=[],i=0;
+      while(i<s.length){var c=s.charAt(i);
+        if(/[\d.]/.test(c)){var m=NUM.exec(s.slice(i));if(!m)return null;out.push({t:"n",v:Number(m[0])});i+=m[0].length;continue}
+        if("+-*/()%".indexOf(c)>=0){out.push({t:c});i++;continue}
+        return null}
+      return out}
+    function evaluate(src){var s=normalize(src);if(!s||s.length>300)return null;var toks=tokenize(s);if(!toks||!toks.length)return null;var p=0,depth=0;
+      function peek(){return toks[p]&&toks[p].t}
+      function fail(){throw 0}
+      function expr(){var v=term();while(peek()==="+"||peek()==="-"){var o=toks[p++].t,r=term();v=o==="+"?v+r:v-r}return v}
+      function term(){var v=unary();while(peek()==="*"||peek()==="/"){var o=toks[p++].t,r=unary();if(o==="/"){if(r===0)fail();v=v/r}else v=v*r}return v}
+      function unary(){if(peek()==="-"){p++;if(++depth>200)fail();var v=-unary();depth--;return v}return postfix()}
+      function postfix(){var v=primary();while(peek()==="%"){p++;v=v/100}return v}
+      function primary(){var t=toks[p];if(!t)fail();
+        if(t.t==="n"){p++;return t.v}
+        if(t.t==="("){p++;if(peek()===")")fail();if(++depth>200)fail();var v=expr();depth--;if(peek()!==")")fail();p++;return v}
+        fail()}
+      try{var v=expr();if(p!==toks.length)return null;return Number.isFinite(v)?v:null}catch(e){return null}}
+    function fmt(n){if(typeof n!=="number"||!Number.isFinite(n))return null;var r=Number(n.toPrecision(12));if(r===0)r=0;return String(r)}
+    return {evaluate:evaluate,fmt:fmt,normalize:normalize,tokenize:tokenize};
+  })();
+  // parser:end
   (function(){
-    const tg=window.Telegram&&window.Telegram.WebApp;
-    if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#05060a");tg.setBackgroundColor("#05060a")}catch(e){}
-      const name=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.first_name)||"MINI APP";
+    var tg=window.Telegram&&window.Telegram.WebApp;
+    if(tg){try{tg.ready();tg.expand();tg.setHeaderColor("#05060a");tg.setBackgroundColor("#05060a")}catch(e){}
+      var name=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.first_name)||"MINI APP";
       document.getElementById("who").textContent=name}
-    const display=document.getElementById("display"),exprEl=document.getElementById("expr"),memFlag=document.getElementById("memFlag");
-    const viewCalc=document.getElementById("viewCalc"),viewHist=document.getElementById("viewHist"),histList=document.getElementById("histList");
-    let current="0",stored=null,op=null,fresh=false,memory=0,history=[];
+    var P=NeonParser;
+    var displayEl=document.getElementById("display"),lineEl=document.getElementById("line"),draftEl=document.getElementById("draft"),memFlag=document.getElementById("memFlag");
+    var viewCalc=document.getElementById("viewCalc"),viewHist=document.getElementById("viewHist"),histList=document.getElementById("histList"),tabHist=document.getElementById("tabCalc");
+    var MAXLEN=200;
+    // Editor state: expression in ASCII (+ - * / ( ) % . digits), caret = index 0..len.
+    var expr="",caret=0,fresh=false,memory=0,history=[];
     try{memory=Number(localStorage.getItem("neon-mem")||0)||0}catch(e){}
-    try{history=JSON.parse(localStorage.getItem("neon-hist")||"[]")}catch(e){history=[]}
-    function fmt(n){const num=Number(n);if(!Number.isFinite(num))return"ERR";const s=String(num);return s.length>14?num.toExponential(6):s}
+    try{history=JSON.parse(localStorage.getItem("neon-hist")||"[]");if(!Array.isArray(history))history=[]}catch(e){history=[]}
     function save(){try{localStorage.setItem("neon-mem",String(memory));localStorage.setItem("neon-hist",JSON.stringify(history.slice(0,20)))}catch(e){}}
-    function fit(){display.style.fontSize="";const cw=display.clientWidth,sw=display.scrollWidth;if(!cw||sw<=cw)return;const fs=parseFloat(getComputedStyle(display).fontSize);display.style.fontSize=Math.max(12,Math.floor(fs*cw/sw*0.97))+"px"}
-    function render(){display.textContent=current;exprEl.textContent=stored!==null&&op?fmt(stored)+" "+op:"";memFlag.classList.toggle("on",memory!==0);fit()}
-    function renderHist(){if(!history.length){histList.innerHTML='<div class="empty">Пока пусто. Посчитай что-нибудь и жми =</div>';return}
-      histList.innerHTML=history.map(function(item,i){return '<div class="hist-item" data-i="'+i+'"><small>'+item.expr+'</small>'+item.result+'</div>'}).join('')}
-    const tabHist=document.getElementById("tabCalc"),tabDice=document.getElementById("tabDice");
-    let diceTimer=null;
+    var PRETTY={"*":"×","/":"÷","-":"−"};
+    function pretty(s){return String(s).replace(/[*\/-]/g,function(c){return PRETTY[c]})}
+    function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+    function isPlainNumber(s){return /^-?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/.test(s)}
+    function current(){return P.evaluate(expr)}
+    // ---------- rendering ----------
+    function render(){
+      var html="";
+      for(var i=0;i<=expr.length;i++){
+        if(i===caret)html+='<span class="caret" id="caret"></span>';
+        if(i<expr.length){var c=expr.charAt(i);html+='<span class="ch'+("+-*/%".indexOf(c)>=0?" o":"")+'" data-i="'+i+'">'+esc(PRETTY[c]||c)+'</span>'}
+      }
+      if(!expr)html+='<span class="ph">0</span>';
+      lineEl.innerHTML=html;
+      var v=current(),out=P.fmt(v);
+      draftEl.classList.remove("ok","wait");
+      if(!expr||(isPlainNumber(expr)&&out!==null)){draftEl.innerHTML="&nbsp;"}
+      else if(out===null){draftEl.textContent="ждём";draftEl.classList.add("wait")}
+      else{draftEl.textContent="= "+pretty(out);draftEl.classList.add("ok")}
+      memFlag.classList.toggle("on",memory!==0);
+      fit();
+    }
+    function fit(){
+      if(viewCalc.classList.contains("hidden"))return;
+      displayEl.style.fontSize="";
+      var base=parseFloat(getComputedStyle(displayEl).fontSize),cw=displayEl.clientWidth,sw=lineEl.offsetWidth;
+      if(cw&&sw>cw){var fs=Math.max(Math.min(18,base),Math.floor(base*cw/sw*0.98));displayEl.style.fontSize=fs+"px"}
+      keepCaretVisible();
+    }
+    function keepCaretVisible(){
+      var c=document.getElementById("caret");if(!c)return;
+      var cw=displayEl.clientWidth,m=Math.min(24,cw/4);
+      var dr=displayEl.getBoundingClientRect(),cr=c.getBoundingClientRect(),rel=cr.left-dr.left;
+      if(displayEl.scrollWidth<=cw+1){displayEl.scrollLeft=0;return}
+      if(rel<m)displayEl.scrollLeft+=rel-m;else if(rel>cw-m)displayEl.scrollLeft+=rel-(cw-m);
+    }
+    function renderHist(){
+      if(!history.length){histList.innerHTML='<div class="empty">Пока пусто. Посчитай что-нибудь и жми =</div>';return}
+      histList.innerHTML=history.map(function(item,i){
+        item=item&&typeof item==="object"?item:{expr:"",result:String(item)};
+        var ex=item.expr==null?"":String(item.expr),rs=item.result==null?"":String(item.result);
+        return '<div class="hist-item" data-i="'+i+'"><small>'+esc(pretty(ex))+' =</small>'+esc(pretty(rs))+'</div>'}).join("")}
     function histOpen(){return !viewHist.classList.contains("hidden")}
-    function show(which){const histMode=which==="hist";viewCalc.classList.toggle("hidden",histMode);viewHist.classList.toggle("hidden",!histMode);
-      tabHist.classList.toggle("on",histMode);tabHist.setAttribute("aria-pressed",String(histMode));tabHist.setAttribute("aria-expanded",String(histMode));
-      tabHist.innerHTML=histMode?'ИСТОРИЯ <span class="x" aria-hidden="true">×</span>':"ИСТОРИЯ";tabHist.title=histMode?"Закрыть историю":"Открыть историю";
-      if(histMode)renderHist();else{if(diceTimer){clearTimeout(diceTimer);diceTimer=null;tabDice.textContent="КУБИК";tabDice.classList.remove("rolled")}requestAnimationFrame(fit)}}
-    function inputNum(d){if(fresh){current=d==="."?"0.":d;fresh=false}else if(d==="."){if(current.indexOf(".")===-1)current+="."}else current=current==="0"?d:current+d;render()}
-    function apply(){if(stored===null||!op)return Number(current);const a=Number(stored),b=Number(current);if(op==="+")return a+b;if(op==="-")return a-b;if(op==="*")return a*b;if(op==="/")return b===0?NaN:a/b;return b}
-    function setOp(next){if(stored!==null&&!fresh)stored=apply();else stored=Number(current);op=next;current=fmt(stored);fresh=true;render()}
-    function equals(){if(op===null)return;const left=fmt(stored),right=current,sign=op;current=fmt(apply());history.unshift({expr:left+" "+sign+" "+right,result:current});stored=null;op=null;fresh=true;save();render()}
-    function handle(btn){if(!btn)return;const num=btn.getAttribute("data-num"),nextOp=btn.getAttribute("data-op"),act=btn.getAttribute("data-act");
-      if(num!==null)inputNum(num);else if(nextOp)setOp(nextOp);else if(act==="clear"){current="0";stored=null;op=null;fresh=false;render()}
-      else if(act==="sign"){if(current!=="0")current=current.charAt(0)==="-"?current.slice(1):"-"+current;render()}
-      else if(act==="percent"){current=fmt(Number(current)/100);render()}else if(act==="eq")equals();
-      else if(act==="mc"){memory=0;save();render()}else if(act==="mr"){current=fmt(memory);fresh=true;render()}
-      else if(act==="mplus"){memory+=Number(current)||0;save();fresh=true;render()}else if(act==="mminus"){memory-=Number(current)||0;save();fresh=true;render()}}
-    document.getElementById("grid").addEventListener("click",function(e){handle(e.target.closest("button"))});
+    function show(which){var h=which==="hist";viewCalc.classList.toggle("hidden",h);viewHist.classList.toggle("hidden",!h);
+      tabHist.classList.toggle("on",h);tabHist.setAttribute("aria-pressed",String(h));tabHist.setAttribute("aria-expanded",String(h));
+      tabHist.innerHTML=h?'ИСТОРИЯ <span class="x" aria-hidden="true">×</span>':"ИСТОРИЯ";tabHist.title=h?"Закрыть историю":"Открыть историю";
+      if(h)renderHist();else requestAnimationFrame(fit)}
+    // ---------- editing ----------
+    function setExpr(s,c){expr=s.slice(0,MAXLEN);caret=Math.max(0,Math.min(c,expr.length));render()}
+    function insertAt(str){
+      if(fresh){fresh=false;if(caret===expr.length&&/^[\d.(]/.test(str)){expr="";caret=0}}
+      if(expr.length+str.length>MAXLEN)return;
+      setExpr(expr.slice(0,caret)+str+expr.slice(caret),caret+str.length)}
+    function numberRange(pos){var s=pos,e=pos;while(s>0&&/[\d.]/.test(expr.charAt(s-1)))s--;while(e<expr.length&&/[\d.]/.test(expr.charAt(e)))e++;return e>s?{s:s,e:e}:null}
+    function inputDigit(d){
+      if(d==="."){
+        if(fresh&&caret===expr.length){fresh=false;expr="";caret=0}
+        var r=numberRange(caret);if(r&&expr.slice(r.s,r.e).indexOf(".")>=0)return;
+        insertAt(/\d/.test(expr.charAt(caret-1))?".":"0.");return}
+      insertAt(d)}
+    function inputOp(o){
+      fresh=false;var prev=expr.charAt(caret-1);
+      if(o!=="-"&&/[+\-*\/]/.test(prev)){
+        // replace a trailing operator (or a unary minus that follows another operator / "(")
+        var s=caret-1;if(prev==="-"&&/[*\/]/.test(expr.charAt(s-1)))s--;
+        if(s===0||expr.charAt(s-1)==="("){setExpr(expr.slice(0,s)+expr.slice(caret),s);return}
+        setExpr(expr.slice(0,s)+o+expr.slice(caret),s+1);return}
+      if(o==="-"&&/[+\-]/.test(prev)){setExpr(expr.slice(0,caret-1)+"-"+expr.slice(caret),caret);return}
+      insertAt(o)}
+    function backspace(){fresh=false;if(caret>0)setExpr(expr.slice(0,caret-1)+expr.slice(caret),caret-1);else render()}
+    function del(){fresh=false;if(caret<expr.length)setExpr(expr.slice(0,caret)+expr.slice(caret+1),caret);else render()}
+    function moveCaret(c){fresh=false;caret=Math.max(0,Math.min(c,expr.length));render()}
+    function isAtom(t){if(/^(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/.test(t))return true;if(t.charAt(0)!=="("||t.charAt(t.length-1)!==")")return false;
+      for(var i=0,d=0;i<t.length;i++){var c=t.charAt(i);if(c==="(")d++;else if(c===")"){d--;if(d===0&&i<t.length-1)return false}}return d===0}
+    function operandRange(){
+      var r=numberRange(caret);if(r)return r;
+      if(expr.charAt(caret-1)===")"){var d=0;for(var i=caret-1;i>=0;i--){var c=expr.charAt(i);if(c===")")d++;else if(c==="("){d--;if(d===0)return {s:i,e:caret}}}}
+      return null}
+    // ± : toggles the sign of the number (or ")"-closed group) at/before the caret.
+    //   at expression start or right after "(" -> leading unary minus: 5 -> -5
+    //   elsewhere -> wrapped: 2+5 -> 2+(-5); pressing again unwraps / removes the minus.
+    function toggleSign(){
+      fresh=false;var r=operandRange();
+      if(!r){var pv=expr.charAt(caret-1);if(caret===0||/[+*\/(]/.test(pv))insertAt("-");return}
+      var s=r.s,e=r.e,body=expr.slice(s,e);
+      if(body.slice(0,2)==="(-"&&isAtom(body.slice(2,-1))){var inner=body.slice(2,-1);setExpr(expr.slice(0,s)+inner+expr.slice(e),s+inner.length);return}
+      if(expr.charAt(s-1)==="-"&&expr.charAt(s-2)==="("&&expr.charAt(e)===")"){setExpr(expr.slice(0,s-2)+body+expr.slice(e+1),s-2+body.length);return}
+      if(expr.charAt(s-1)==="-"&&(s-1===0||/[+\-*\/(]/.test(expr.charAt(s-2)))){setExpr(expr.slice(0,s-1)+body+expr.slice(e),s-1+body.length);return}
+      if(s===0||expr.charAt(s-1)==="("){setExpr(expr.slice(0,s)+"-"+body+expr.slice(e),s+1+body.length);return}
+      setExpr(expr.slice(0,s)+"(-"+body+")"+expr.slice(e),s+3+body.length)}
+    // % : postfix percent on the number (or group) at/before the caret, n% = n/100. Pressing again removes it.
+    function togglePercent(){
+      fresh=false;var r=operandRange();
+      if(!r){if(expr.charAt(caret-1)==="%")setExpr(expr.slice(0,caret-1)+expr.slice(caret),caret-1);return}
+      if(expr.charAt(r.e)==="%"){setExpr(expr.slice(0,r.e)+expr.slice(r.e+1),r.e);return}
+      setExpr(expr.slice(0,r.e)+"%"+expr.slice(r.e),r.e+1)}
+    function insertValue(val){
+      // inserts a number at the caret; adds × where it would otherwise glue onto a neighbour
+      if(fresh&&caret===expr.length){fresh=false;expr="";caret=0}
+      fresh=false;var s=val,pv=expr.charAt(caret-1),nx=expr.charAt(caret);
+      if(s.charAt(0)==="-"&&caret>0&&pv!=="(")s="("+s+")";
+      if(/[\d.)%]/.test(pv))s="*"+s;
+      if(/[\d.(]/.test(nx))s=s+"*";
+      insertAt(s)}
+    function nudge(){draftEl.classList.remove("shake");void draftEl.offsetWidth;draftEl.classList.add("shake")}
+    function equals(){
+      var out=P.fmt(current());
+      if(out===null){fresh=false;render();nudge();return}
+      if(!isPlainNumber(expr)){history.unshift({expr:pretty(expr),result:out});history=history.slice(0,20);save()}
+      expr=out;caret=out.length;fresh=true;render()}
+    function clearAll(){expr="";caret=0;fresh=false;render()}
+    // Memory: M+/M− use the live draft value; when the expression is not computable they do nothing (draft shakes).
+    function memAdd(sign){var v=current();if(v===null){nudge();return}var r=Number(P.fmt(memory+sign*v));memory=Number.isFinite(r)?r:memory;save();fresh=true;render()}
+    function handle(btn){if(!btn)return;
+      var num=btn.getAttribute("data-num"),op=btn.getAttribute("data-op"),par=btn.getAttribute("data-paren"),act=btn.getAttribute("data-act");
+      if(num!==null)inputDigit(num);else if(op)inputOp(op);else if(par)insertAt(par);
+      else if(act==="clear")clearAll();else if(act==="sign")toggleSign();else if(act==="percent")togglePercent();else if(act==="eq")equals();
+      else if(act==="mc"){memory=0;save();render()}else if(act==="mr")insertValue(P.fmt(memory)||"0");
+      else if(act==="mplus")memAdd(1);else if(act==="mminus")memAdd(-1)}
+    var grid=document.getElementById("grid");
+    grid.addEventListener("click",function(e){handle(e.target.closest("button"))});
+    // keep focus off buttons (no Enter double-trigger, no stray focus rings)
+    document.addEventListener("mousedown",function(e){if(e.target.closest&&e.target.closest("button"))e.preventDefault()});
     tabHist.addEventListener("click",function(){show(histOpen()?"calc":"hist")});
-    function roll(){const n=1+Math.floor(Math.random()*100);current=String(n);stored=null;op=null;fresh=true;render();
-      if(histOpen()){tabDice.textContent="КУБИК: "+n;tabDice.classList.add("rolled");clearTimeout(diceTimer);diceTimer=setTimeout(function(){tabDice.textContent="КУБИК";tabDice.classList.remove("rolled")},1600)}
-      if(tg&&tg.HapticFeedback)try{tg.HapticFeedback.impactOccurred("light")}catch(e){}}
-    tabDice.addEventListener("click",roll);
-    histList.addEventListener("click",function(e){const item=e.target.closest(".hist-item");if(!item)return;const rec=history[Number(item.getAttribute("data-i"))];if(!rec)return;current=rec.result;stored=null;op=null;fresh=true;show("calc");render()});
-    function backspace(){if(fresh)return;if(!/^-?\d*\.?\d*$/.test(current)){current="0";render();return}
-      let next=current.slice(0,-1);if(next===""||next==="-"||next==="-0")next="0";current=next;render()}
-    const keyBtn=function(sel){return document.querySelector("#grid "+sel)};
+    histList.addEventListener("click",function(e){var item=e.target.closest(".hist-item");if(!item)return;var rec=history[Number(item.getAttribute("data-i"))];if(rec==null)return;
+      var raw=typeof rec==="object"?rec.result:rec,val=P.normalize(raw==null?"":raw).replace(/[^\d.e+\-*\/()%]/g,"");
+      show("calc");if(val){expr=val.slice(0,MAXLEN);caret=expr.length;fresh=true}render()});
+    // ---------- caret by click / tap / drag (custom div, never focusable -> no system keyboard) ----------
+    function caretFromX(x){var chs=lineEl.querySelectorAll(".ch"),n=0;
+      for(var i=0;i<chs.length;i++){var r=chs[i].getBoundingClientRect();if(x>r.left+r.width/2)n=i+1;else break}return n}
+    var dragging=null;
+    displayEl.addEventListener("pointerdown",function(e){if(e.button>0)return;e.preventDefault();dragging=e.pointerId;try{displayEl.setPointerCapture(e.pointerId)}catch(_){}moveCaret(caretFromX(e.clientX))});
+    displayEl.addEventListener("pointermove",function(e){if(dragging!==e.pointerId)return;var c=caretFromX(e.clientX);if(c!==caret)moveCaret(c)});
+    function endDrag(e){if(dragging===e.pointerId)dragging=null}
+    displayEl.addEventListener("pointerup",endDrag);displayEl.addEventListener("pointercancel",endDrag);
+    // horizontal drag moves the caret instead of panning (touch-action stays permissive so taps elsewhere stay snappy)
+    displayEl.addEventListener("touchmove",function(e){if(dragging!==null&&e.cancelable)e.preventDefault()},{passive:false});
+    displayEl.addEventListener("contextmenu",function(e){e.preventDefault()});
+    // ---------- keyboard ----------
+    var keyBtn=function(sel){return grid.querySelector(sel)};
     function flash(btn){if(!btn)return;btn.classList.add("kbd");setTimeout(function(){btn.classList.remove("kbd")},120)}
-    function keyToButton(e){const k=e.key,c=e.code||"";
-      let m=/^Numpad([0-9])$/.exec(c);if(m)return keyBtn('[data-num="'+m[1]+'"]');
-      if(/^[0-9]$/.test(k))return keyBtn('[data-num="'+k+'"]');
-      if(c==="NumpadDecimal"||k==="."||k===",")return keyBtn('[data-num="."]');
-      const ops={NumpadAdd:"+",NumpadSubtract:"-",NumpadMultiply:"*",NumpadDivide:"/"};
-      if(ops[c])return keyBtn('[data-op="'+ops[c]+'"]');
-      if(k==="+"||k==="-"||k==="*"||k==="/")return keyBtn('[data-op="'+k+'"]');
-      if(k==="Enter"||c==="NumpadEnter"||k==="=")return keyBtn('[data-act="eq"]');
-      if(k==="Escape"||k==="Delete"||k==="c"||k==="C"||c==="KeyC")return keyBtn('[data-act="clear"]');
-      if(k==="%")return keyBtn('[data-act="percent"]');
+    function keyAction(e){var k=e.key,c=e.code||"",m=/^Numpad([0-9])$/.exec(c);
+      if(m)return {btn:keyBtn('[data-num="'+m[1]+'"]')};
+      if(/^[0-9]$/.test(k))return {btn:keyBtn('[data-num="'+k+'"]')};
+      if(c==="NumpadDecimal"||k==="."||k===",")return {btn:keyBtn('[data-num="."]')};
+      var ops={NumpadAdd:"+",NumpadSubtract:"-",NumpadMultiply:"*",NumpadDivide:"/"};
+      if(ops[c])return {btn:keyBtn('[data-op="'+ops[c]+'"]')};
+      if(k==="+"||k==="-"||k==="*"||k==="/")return {btn:keyBtn('[data-op="'+k+'"]')};
+      if(k==="("||k===")")return {btn:keyBtn('[data-paren="'+k+'"]')};
+      if(k==="%")return {btn:keyBtn('[data-act="percent"]')};
+      if(k==="Enter"||c==="NumpadEnter"||k==="=")return {btn:keyBtn('[data-act="eq"]')};
+      if(k==="Escape")return {fn:function(){if(histOpen())show("calc");else{clearAll();flash(keyBtn('[data-act="clear"]'))}},keepHist:true};
+      if(k==="Backspace")return {fn:backspace};
+      if(k==="Delete")return {fn:del};
+      if(k==="ArrowLeft")return {fn:function(){moveCaret(caret-1)}};
+      if(k==="ArrowRight")return {fn:function(){moveCaret(caret+1)}};
+      if(k==="Home")return {fn:function(){moveCaret(0)}};
+      if(k==="End")return {fn:function(){moveCaret(expr.length)}};
       return null}
     document.addEventListener("keydown",function(e){
       if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing)return;
-      const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT"||t.isContentEditable))return;
-      const isBack=e.key==="Backspace",btn=isBack?null:keyToButton(e);
-      if(e.key==="Escape"&&histOpen()){e.preventDefault();show("calc");return}
-      if(!isBack&&!btn)return;
+      var t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT"||t.isContentEditable))return;
+      var a=keyAction(e);if(!a||(!a.fn&&!a.btn))return;
       e.preventDefault();
       if(document.activeElement&&document.activeElement.tagName==="BUTTON")document.activeElement.blur();
-      if(e.repeat&&btn&&btn.getAttribute("data-act"))return;
-      if(viewCalc.classList.contains("hidden"))show("calc");
-      if(isBack)backspace();else{handle(btn);flash(btn)}
+      if(a.keepHist){a.fn();return}
+      if(e.repeat&&a.btn&&a.btn.getAttribute("data-act"))return;
+      if(histOpen())show("calc");
+      if(a.fn)a.fn();else{handle(a.btn);flash(a.btn)}
     });
     window.addEventListener("resize",fit);
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
-    const start=new URLSearchParams(location.search).get("start")||"";
-    if(start==="history")show("hist");else{show("calc");if(start==="dice"){current=String(1+Math.floor(Math.random()*100));stored=null;op=null;fresh=true}}render();
+    var start=new URLSearchParams(location.search).get("start")||"";
+    show(start==="history"?"hist":"calc");render();
   })();
   </script>
 </body>

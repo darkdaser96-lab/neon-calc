@@ -7,11 +7,10 @@ export default async function handler(req, res) {
   const chatId = msg.chat.id;
   const text = (msg.text || "").trim();
   const keyboard = { keyboard: [[
-    { text: "История", web_app: { url: origin + "/?start=history" } },
-    { text: "Кубик", web_app: { url: origin + "/?start=dice" } }
+    { text: "История", web_app: { url: origin + "/?start=history" } }
   ]], resize_keyboard: true };
   let reply = "Жми кнопку — откроется Mini App.";
-  if (text === "/start") reply = "Две кнопки:\n• История\n• Кубик — случайное 1–100\nКалькулятор внутри окна.";
+  if (text === "/start") reply = "Кнопка «История» откроет Mini App.\nКалькулятор внутри окна.";
   await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_id: chatId, text: reply, reply_markup: keyboard })
